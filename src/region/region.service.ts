@@ -23,7 +23,7 @@ export class RegionService {
   }
 
   findAll() {
-    return this.regionSchema.find();
+    return this.regionSchema.find().populate("districts");
   }
 
   findOne(id: string) {

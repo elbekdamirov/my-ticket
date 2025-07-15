@@ -10,6 +10,11 @@ import { DeliveryMethodModule } from "./delivery-method/delivery-method.module";
 import { PaymentMethodModule } from "./payment-method/payment-method.module";
 import { RegionModule } from "./region/region.module";
 import { TicketStatusModule } from './ticket-status/ticket-status.module';
+import { DistrictsModule } from './districts/districts.module';
+import { VenueModule } from './venue/venue.module';
+import { VenuePhotoModule } from './venue-photo/venue-photo.module';
+import { VenueTypesModule } from './venue-types/venue-types.module';
+import { CustomerModule } from './customer/customer.module';
 
 @Module({
   imports: [
@@ -24,6 +29,11 @@ import { TicketStatusModule } from './ticket-status/ticket-status.module';
     PaymentMethodModule,
     RegionModule,
     TicketStatusModule,
+    DistrictsModule,
+    VenueModule,
+    VenuePhotoModule,
+    VenueTypesModule,
+    CustomerModule,
   ],
   controllers: [],
   providers: [],
