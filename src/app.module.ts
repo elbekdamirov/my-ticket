@@ -18,6 +18,7 @@ import { CustomerModule } from "./customer/customer.module";
 import { SeatModule } from "./seat/seat.module";
 import { CustomerCardModule } from './customer-card/customer-card.module';
 import { CustomerAddressModule } from './customer-address/customer-address.module';
+import { CustomerAuthModule } from './customer-auth/customer-auth.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { CustomerAddressModule } from './customer-address/customer-address.modul
     SeatModule,
     CustomerCardModule,
     CustomerAddressModule,
+    CustomerAuthModule,
   ],
   controllers: [],
   providers: [],

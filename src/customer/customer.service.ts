@@ -25,6 +25,10 @@ export class CustomerService {
     });
   }
 
+  findByEmail(email: string) {
+    return this.customerService.findOne({ email });
+  }
+
   findAll() {
     return this.customerService.find();
   }
@@ -41,5 +45,14 @@ export class CustomerService {
 
   remove(id: string) {
     return this.customerService.findByIdAndDelete(id);
+  }
+
+  async updateRefreshToken(id: string, refresh_token: string) {
+    const updatedCustomer = await this.customerService.findByIdAndUpdate(
+      id,
+      { hashed_refresh_token: refresh_token },
+      { new: true }
+    );
+    return updatedCustomer;
   }
 }

@@ -6,40 +6,35 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from "@nestjs/common";
-import {
-  Admin,
-  AdminDocument,
-  AdminSchema,
-} from "../admin/schemas/admin.schema";
 import { JwtService } from "@nestjs/jwt";
-import { CreateAdminDto } from "../admin/dto/create-admin.dto";
-import { AdminService } from "../admin/admin.service";
-import { LoginAdminDto } from "../admin/dto/login-admin.dto";
+import { CustomerService } from "../customer/customer.service";
+import { CustomerDocument } from "../customer/schemas/customer.schema";
+import { CreateCustomerDto } from "../customer/dto/create-customer.dto";
+import { LoginCustomerDto } from "../customer/dto/login-customer.dto";
 import * as bcrypt from "bcrypt";
 import { Response } from "express";
 
 @Injectable()
-export class AuthService {
+export class CustomerAuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly adminService: AdminService
+    private readonly customerService: CustomerService
   ) {}
 
-  async generateTokens(admin: AdminDocument) {
+  async generateTokens(customer: CustomerDocument) {
     const payload = {
-      id: admin._id,
-      is_active: admin.is_active,
-      is_creator: admin.is_creator,
+      id: customer._id,
+      is_active: customer.is_active,
     };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        secret: process.env.ADMIN_ACCESS_TOKEN_KEY,
-        expiresIn: process.env.ADMIN_ACCESS_TOKEN_TIME,
+        secret: process.env.CUSTOMER_ACCESS_TOKEN_KEY,
+        expiresIn: process.env.CUSTOMER_ACCESS_TOKEN_TIME,
       }),
       this.jwtService.signAsync(payload, {
-        secret: process.env.ADMIN_REFRESH_TOKEN_KEY,
-        expiresIn: process.env.ADMIN_REFRESH_TOKEN_TIME,
+        secret: process.env.CUSTOMER_REFRESH_TOKEN_KEY,
+        expiresIn: process.env.CUSTOMER_REFRESH_TOKEN_TIME,
       }),
     ]);
     return {
@@ -48,57 +43,61 @@ export class AuthService {
     };
   }
 
-  async registration(createAdminDto: CreateAdminDto) {
-    const candidate = await this.adminService.findByEmail(createAdminDto.email);
+  async registration(createCustomerDto: CreateCustomerDto) {
+    const candidate = await this.customerService.findByEmail(
+      createCustomerDto.email
+    );
     if (candidate) {
       throw new ConflictException("This user already exists");
     }
-    const admin = await this.adminService.create(createAdminDto);
-    return { adminId: admin._id };
+    const customer = await this.customerService.create(createCustomerDto);
+    return { customerId: customer._id };
   }
 
-  async login(loginAdminDto: LoginAdminDto, res: Response) {
-    const admin = await this.adminService.findByEmail(loginAdminDto.email);
-    if (!admin) {
+  async login(loginCustomerDto: LoginCustomerDto, res: Response) {
+    const customer = await this.customerService.findByEmail(
+      loginCustomerDto.email
+    );
+    if (!customer) {
       throw new UnauthorizedException("Email or password is incorrect");
     }
 
     const isMatch = await bcrypt.compare(
-      loginAdminDto.password,
-      admin.hashed_password
+      loginCustomerDto.password,
+      customer.hashed_password
     );
 
     if (!isMatch) {
       throw new UnauthorizedException("Email or password is incorrect");
     }
 
-    const { accessToken, refreshToken } = await this.generateTokens(admin);
-    admin.hashed_refresh_token = await bcrypt.hash(refreshToken, 7);
-    await admin.save();
+    const { accessToken, refreshToken } = await this.generateTokens(customer);
+    customer.hashed_refresh_token = await bcrypt.hash(refreshToken, 7);
+    await customer.save();
 
     res.cookie("refreshToken", refreshToken, {
       maxAge: +process.env.COOKIE_TIME!,
       httpOnly: true,
     });
 
-    return { adminId: admin._id, accessToken };
+    return { customerId: customer._id, accessToken };
   }
 
   async logout(refreshToken: string, res: Response) {
-    let adminData: any;
+    let customerData: any;
     try {
-      adminData = await this.jwtService.verify(refreshToken, {
+      customerData = await this.jwtService.verify(refreshToken, {
         secret: process.env.REFRESH_TOKEN_KEY,
       });
     } catch (error) {
       throw new BadRequestException(error);
     }
 
-    if (!adminData) {
+    if (!customerData) {
       throw new ForbiddenException("User not verified");
     }
 
-    await this.adminService.updateRefreshToken(adminData.id, "");
+    await this.customerService.updateRefreshToken(customerData.id, "");
 
     res.clearCookie("refreshToken");
     return {
@@ -117,7 +116,7 @@ export class AuthService {
       throw new ForbiddenException("Ruxsat etilmagan");
     }
 
-    const user = await this.adminService.findOne(userId);
+    const user = await this.customerService.findOne(userId);
 
     if (!user || !user.hashed_refresh_token) {
       throw new NotFoundException("user not found");
