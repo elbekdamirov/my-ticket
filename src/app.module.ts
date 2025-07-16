@@ -19,6 +19,10 @@ import { SeatModule } from "./seat/seat.module";
 import { CustomerCardModule } from './customer-card/customer-card.module';
 import { CustomerAddressModule } from './customer-address/customer-address.module';
 import { CustomerAuthModule } from './customer-auth/customer-auth.module';
+import { HumanCategoryModule } from './human-category/human-category.module';
+import { EventTypeModule } from './event-type/event-type.module';
+import { EventModule } from './event/event.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -42,6 +46,10 @@ import { CustomerAuthModule } from './customer-auth/customer-auth.module';
     CustomerCardModule,
     CustomerAddressModule,
     CustomerAuthModule,
+    HumanCategoryModule,
+    EventTypeModule,
+    EventModule,
+    TicketModule,
   ],
   controllers: [],
   providers: [],
