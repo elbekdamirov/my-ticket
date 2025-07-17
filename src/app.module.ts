@@ -23,6 +23,9 @@ import { HumanCategoryModule } from './human-category/human-category.module';
 import { EventTypeModule } from './event-type/event-type.module';
 import { EventModule } from './event/event.module';
 import { TicketModule } from './ticket/ticket.module';
+import { CartModule } from './cart/cart.module';
+import { CartItemModule } from './cart-item/cart-item.module';
+import { BookingModule } from './booking/booking.module';
 
 @Module({
   imports: [
@@ -50,6 +53,9 @@ import { TicketModule } from './ticket/ticket.module';
     EventTypeModule,
     EventModule,
     TicketModule,
+    CartModule,
+    CartItemModule,
+    BookingModule,
   ],
   controllers: [],
   providers: [],
